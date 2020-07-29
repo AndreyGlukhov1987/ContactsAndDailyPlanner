@@ -10,7 +10,6 @@
 
   <ItemGroup>
     <ProjectReference Include="..\ContactsAndDailyPlanner.DAL\ContactsAndDailyPlanner.DAL.csproj" />
-    <ProjectReference Include="..\Server\ContactsAndDailyPlanner.DAL.csproj" />
   </ItemGroup>
 
 </Project>
