@@ -1,0 +1,143 @@
+﻿@model ContactsAndDailyPlanner.Web.Models.Contact.ContactViewModel
+
+<div>
+    <table>
+        <tr>
+            <td class="col-sm-2">
+                @Html.DisplayNameFor(model => model.FirstName)
+            </td>
+            <td class="col-sm-10">
+                @Html.DisplayFor(model => model.FirstName)
+            </td>
+        </tr>
+        <tr>
+            <td class="col-sm-2">
+                @Html.DisplayNameFor(model => model.LastName)
+            </td>
+            <td class="col-sm-10">
+                @Html.DisplayFor(model => model.LastName)
+            </td>
+        </tr>
+        <tr>
+            <td class="col-sm-2">
+                @Html.DisplayNameFor(model => model.MiddleName)
+            </td>
+            <td class="col-sm-10">
+                @Html.DisplayFor(model => model.MiddleName)
+            </td>
+        </tr>
+        <tr>
+            <td class="col-sm-2">
+                @Html.DisplayNameFor(model => model.BirthDate)
+            </td>
+            <td class="col-sm-10">
+                @Html.DisplayFor(model => model.BirthDate)
+            </td>
+        </tr>
+        <tr>
+            <td class="col-sm-2">
+                @Html.DisplayNameFor(model => model.Organisation)
+            </td>
+            <td class="col-sm-10">
+                @Html.DisplayFor(model => model.Organisation)
+            </td>
+        </tr>
+        <tr>
+            <td class="col-sm-2">
+                @Html.DisplayNameFor(model => model.Position)
+            </td>
+            <td class="col-sm-10">
+                @Html.DisplayFor(model => model.Position)
+            </td>
+        </tr>
+        <tr>
+            <td class="col-sm-2">
+                @Html.DisplayNameFor(model => model.Emails)
+            </td>
+            <td class="col-sm-10">
+                <table>
+                    @if (Model != null && Model.Emails != null)
+                    {
+                        for (int i = 0; i < Model.Emails.Count(); i++)
+                        {
+                            <tr>
+                                <td>
+                                    @Html.DisplayFor(model => Model.Emails[i].EmailType);
+                                </td>
+                                <td>
+                                    @Html.DisplayFor(model => Model.Emails[i].Value)
+                                </td>
+                            </tr>
+                        }
+                    }
+                </table>
+            </td>
+        </tr>
+        <tr>
+            <td class="col-sm-2">
+                @Html.DisplayNameFor(model => model.Phones)
+            </td>
+            <td class="col-sm-10">
+                <table>
+                    @if (Model != null && Model.Phones != null)
+                    {
+                        for (int i = 0; i < Model.Phones.Count(); i++)
+                        {
+                            <tr>
+                                <td>
+                                    @Html.DisplayFor(model => Model.Phones[i].PhoneType);
+                                </td>
+                                <td>
+                                    @Html.DisplayFor(model => Model.Phones[i].PhoneNumber)
+                                </td>
+                            </tr>
+                        }
+                    }
+                </table>
+            </td>
+        </tr>
+        <tr>
+            <td class="col-sm-2">
+                @Html.DisplayNameFor(model => model.Skypes)
+            </td>
+            <td class="col-sm-10">
+                <table>
+                    @if (Model != null && Model.Skypes != null)
+                    {
+                        for (int i = 0; i < Model.Skypes.Count(); i++)
+                        {
+                            <tr>
+                                <td>
+                                    @Html.DisplayFor(model => Model.Skypes[i].SkypeType);
+                                </td>
+                                <td>
+                                    @Html.DisplayFor(model => Model.Skypes[i].Value)
+                                </td>
+                            </tr>
+                        }
+                    }
+                </table>
+            </td>
+        </tr>
+        <tr>
+            <td class="col-sm-2">
+                @Html.DisplayNameFor(model => model.Others)
+            </td>
+            <td class="col-sm-10">
+                <table>
+                    @if (Model != null && Model.Others != null)
+                    {
+                        for (int i = 0; i < Model.Others.Count(); i++)
+                        {
+                            <tr>
+                                <td>
+                                    @Html.DisplayFor(model => Model.Others[i].Value)
+                                </td>
+                            </tr>
+                        }
+                    }
+                </table>
+            </td>
+        </tr>
+    </table>
+</div>

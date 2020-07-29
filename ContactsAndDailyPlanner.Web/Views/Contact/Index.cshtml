@@ -1,0 +1,82 @@
+﻿@using ContactsAndDailyPlanner.Web.Models.Contact
+
+@model ContactIndexViewModel
+
+@{
+    ViewData["Title"] = "Contacts";
+}
+
+<h1>Contacts</h1>
+<p>
+    <form method="post" asp-action="Search">
+        <div class="form-group">
+            <input asp-for="Search" class="form-control" required/>
+            <span asp-validation-for="Search" class="text-danger"></span>
+        </div>
+        <input type="submit" value="Search"/>
+        <a asp-action="Index">Reset</a>
+    </form>
+</p>
+<p>
+    <a asp-action="CreateEdit" class="viewDialog btn btn-primary" data_dialog_title="Create">Create</a>
+</p>
+<table class="table">
+    <thead>
+        <tr>
+            <th>
+                @Html.DisplayNameFor(model => model.Contacts.FirstOrDefault().FirstName)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Contacts.FirstOrDefault().LastName)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Contacts.FirstOrDefault().MiddleName)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Contacts.FirstOrDefault().BirthDate)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Contacts.FirstOrDefault().Organisation)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Contacts.FirstOrDefault().Position)
+            </th>
+            <th></th>
+        </tr>
+    </thead>
+    <tbody>
+        @if (Model != null)
+        {
+            foreach (var item in Model.Contacts)
+            {
+                <tr>
+                    <td>
+                        @item.FirstName
+                    </td>
+                    <td>
+                        @item.LastName
+                    </td>
+                    <td>
+                        @item.MiddleName
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.BirthDate)
+                    </td>
+                    <td>
+                        @item.Organisation
+                    </td>
+                    <td>
+                        @item.Position
+                    </td>
+                    <td>
+                        <a asp-action="CreateEdit" class="viewDialog" data_dialog_title="Edit" asp-route-id="@item.Id">Edit</a> |
+                        <a asp-action="Details" class="viewDialog" data_dialog_title="Details" asp-route-id="@item.Id">Details</a> |
+                        <a asp-action="Delete" asp-route-id="@item.Id">Delete</a>
+                    </td>
+                </tr>
+            }
+        }
+    </tbody>
+</table>
+
+<script src="~/js/modaldialog.js" asp-append-version="true"></script>

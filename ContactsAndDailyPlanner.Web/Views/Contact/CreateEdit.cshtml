@@ -1,0 +1,414 @@
+﻿@using ContactsAndDailyPlanner.Web.Models.Contact
+@using ContactsAndDailyPlanner.Web.Models.Phone
+@using ContactsAndDailyPlanner.Web.Models.Email
+@using ContactsAndDailyPlanner.Web.Models.Skype
+@using ContactsAndDailyPlanner.Web.Models.OtherContacInfo
+@using ContactsAndDailyPlanner.Web.Common 
+
+@model ContactViewModel
+
+<script type="text/javascript">
+    var indexOfEmails = @Html.Raw(Model != null && Model.Emails != null ? Model.Emails.Count() : 0);
+    var indexOfPhones = @Html.Raw(Model != null && Model.Phones != null ? Model.Phones.Count() : 0);
+    var indexOfSkypes = @Html.Raw(Model != null && Model.Skypes != null ? Model.Skypes.Count() : 0);
+    var indexOfOthers = @Html.Raw(Model != null && Model.Others != null ? Model.Others.Count() : 0);
+    var emptyGuid = @Html.Raw(Guid.Empty);
+</script>
+
+
+
+<div>
+    <div>
+        <form id="contactForm">
+            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+            @Html.HiddenFor(model => model.Id)
+            <div class="form-group">
+                <label asp-for="FirstName" class="control-label"></label>
+                <input asp-for="FirstName" class="form-control" />
+                <span asp-validation-for="FirstName" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="LastName" class="control-label"></label>
+                <input asp-for="LastName" class="form-control" />
+                <span asp-validation-for="LastName" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="MiddleName" class="control-label"></label>
+                <input asp-for="MiddleName" class="form-control"  />
+                <span asp-validation-for="MiddleName" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="BirthDate" class="control-label"></label>
+                @if (Model.BirthDate != null)
+                {
+                    //check IE11
+                    if (Context.Request.Headers["User-Agent"].FirstOrDefault().Contains("rv:11.0"))
+                    {
+                        <input asp-for="BirthDate" class="form-control" id="datepicker" />
+                    }
+                    else
+                    {
+                        <input asp-for="BirthDate" class="form-control" value="@Model.BirthDate.Value.ToString("yyyy-MM-dd")" />
+                   }
+                   }
+                   else
+                   {
+                    <input asp-for="BirthDate" class="form-control" id="datepicker"/>
+                }
+                <span asp-validation-for="BirthDate" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="Organisation" class="control-label"></label>
+                <input asp-for="Organisation" class="form-control" />
+                <span asp-validation-for="Organisation" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="Position" class="control-label"></label>
+                <input asp-for="Position" class="form-control" />
+                <span asp-validation-for="Position" class="text-danger"></span>
+            </div>
+            <fieldset>
+                <table id="emailsTable">
+                    @if (Model != null && Model.Emails != null)
+                    {
+                        for (int i = 0; i < Model.Emails.Count(); i++)
+                        {
+                            <tr id="@("trEmail" + @i)">
+                                <td>
+                                    @Html.HiddenFor(model => Model.Emails[i].Id)
+                                </td>
+                                <td>
+                                    <select asp-for="@Model.Emails[i].EmailType" asp-items="@(new SelectList(ContactTypes.EmailTypes))" class="form-control">
+                                    </select>
+                                    <span asp-validation-for="@Model.Emails[i].EmailType" class="text-danger"></span>
+                                </td>
+                                <td>
+                                    <input asp-for="@Model.Emails[i].Value" class="form-control" />
+                                    <span asp-validation-for="@Model.Emails[i].Value" class="text-danger"></span>
+                                </td>
+                                <td>
+                                    <input type='button' value='Remove' onclick="removeEmail(@i)"/>
+                                </td>
+                            </tr>
+                        }
+                    }
+                </table>
+
+                <input type="button" value="Add Email" onclick="CreateEmailRow()" />
+            </fieldset>
+
+            <fieldset>
+                <table id="phonesTable">
+                    @if (Model != null && Model.Phones != null)
+                    {
+                        for (int i = 0; i < Model.Phones.Count(); i++)
+                        {
+                            <tr>
+                                <td>
+                                    @Html.HiddenFor(model => Model.Phones[i].Id)
+                                </td>
+                                <td>
+                                    <input asp-for="@Model.Phones[i].PhoneType" class="form-control" />
+                                    <span asp-validation-for="@Model.Phones[i].PhoneType" class="text-danger"></span>
+                                </td>
+                                <td>
+                                    <input asp-for="@Model.Phones[i].PhoneNumber" class="form-control" />
+                                    <span asp-validation-for="@Model.Phones[i].PhoneNumber" class="text-danger"></span>
+                                </td>
+                                <td>
+                                    <input type='button' value='Remove' onclick="removePhone(@i)" />
+                                </td>
+                            </tr>
+                        }
+                    }
+                </table>
+
+                <input type="button" value="Add Phone" onclick="CreatePhoneRow()" />
+            </fieldset>
+            <fieldset>
+                <table id="skypesTable">
+                    @if (Model != null && Model.Skypes != null)
+                    {
+                        for (int i = 0; i < Model.Skypes.Count(); i++)
+                        {
+                            <tr>
+                                <td>
+                                    @Html.HiddenFor(model => Model.Skypes[i].Id)
+                                </td>
+                                <td>
+                                    <input asp-for="@Model.Skypes[i].SkypeType" class="form-control" />
+                                    <span asp-validation-for="@Model.Skypes[i].SkypeType" class="text-danger"></span>
+                                </td>
+                                <td>
+                                    <input asp-for="@Model.Skypes[i].Value" class="form-control" />
+                                    <span asp-validation-for="@Model.Skypes[i].Value" class="text-danger"></span>
+                                </td>
+                                <td>
+                                    <input type='button' value='Remove' onclick="removeRow(@i)" />
+                                </td>
+                            </tr>
+                        }
+                    }
+                </table>
+                <input type="button" value="Add Skype" onclick="CreateSkypeRow()" />
+            </fieldset>
+            <fieldset>
+                <table id="othersTable">
+                    @if (Model != null && Model.Others != null)
+                    {
+                        for (int i = 0; i < Model.Others.Count(); i++)
+                        {
+                            <tr>
+                                <td>
+                                    @Html.HiddenFor(model => Model.Others[i].Id)
+                                </td>
+                                <td>
+                                    <input asp-for="@Model.Others[i].Value" class="form-control" />
+                                    <span asp-validation-for="@Model.Others[i].Value" class="text-danger"></span>
+                                </td>
+                                <td>
+                                    <input type='button' value='Remove' onclick="removeRow(@i)" />
+                                </td>
+                            </tr>
+                        }
+                    }
+                </table>
+                <input type="button" value="Add Other Information" onclick="CreateOtherRow()" />
+            </fieldset>
+        </form>
+    </div>
+</div>
+
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+}
+
+<script type="text/javascript">
+    $(document).ready(function () {
+        $('input[id$=datepicker]').datepicker({
+            dateFormat: 'dd-mm-yyyy'});
+    });
+</script>
+
+<script language="javascript" type="text/javascript">
+
+    function CreateEmailRow() {
+
+        let index = indexOfEmails;
+        let listName = '@nameof(ContactViewModel.Emails)';
+        let rowName = "trEmail";
+
+        let idCell = createIdCell(listName, index);
+
+        let emailTypeCell = createCell(listName, '@nameof(EmailViewModel.EmailType)', index);
+        let emailCell = createCell(listName, '@nameof(EmailViewModel.Value)', index);
+        let removeCell = createRemoveCell("Email", index);
+
+        let newRow = "<tr id='" + rowName + index + "'>" + idCell + emailTypeCell + emailCell + removeCell + "</tr>";
+        $("#emailsTable").append(newRow);
+        indexOfEmails++;
+    }
+
+    function CreatePhoneRow() {
+
+        let index = indexOfPhones;
+        let listName = '@nameof(ContactViewModel.Phones)';
+        let rowName = "trPhone";
+
+        let idCell = createIdCell(listName, index);
+
+        let phoneTypeCell = createCell(listName, '@nameof(PhoneViewModel.PhoneType)', index);
+        let phoneCell = createCell(listName, '@nameof(PhoneViewModel.PhoneNumber)', index);
+        let removeCell = createRemoveCell("Phone", index);
+
+        let newRow = "<tr id='" + rowName + index + "'>" + idCell + phoneTypeCell + phoneCell + removeCell + "</tr>";
+        $("#phonesTable").append(newRow);
+        indexOfPhones++;
+    }
+
+    function CreateSkypeRow() {
+
+        let index = indexOfSkypes;
+        let listName = '@nameof(ContactViewModel.Skypes)';
+        let rowName = "trSkype";
+
+        let idCell = createIdCell(listName, index);
+
+        let skypeTypeCell = createCell(listName, '@nameof(SkypeViewModel.SkypeType)', index);
+        let skypeCell = createCell(listName, '@nameof(SkypeViewModel.Value)', index);
+        let removeCell = createRemoveCell("Skype", index);
+
+        let newRow = "<tr id='" + rowName + index + "'>" + idCell + skypeTypeCell + skypeCell + removeCell + "</tr>";
+        $("#skypesTable").append(newRow);
+        indexOfSkypes++;
+    }
+
+    function CreateOtherRow() {
+
+        let index = indexOfOthers;
+        let listName = '@nameof(ContactViewModel.Others)';
+        let rowName = "trOther";
+
+        let idCell = createIdCell(listName, index);
+
+        let otherCell = createCell(listName, '@nameof(OtherContactInfoViewModel.Value)', index);
+        let removeCell = createRemoveCell("Other", index);
+
+        let newRow = "<tr id='" + rowName + index + "'>" + idCell + otherCell + removeCell + "</tr>";
+        $("#othersTable").append(newRow);
+        indexOfOthers++;
+    }
+
+    function createInputCell(listName, name, index) {
+        return "<input id='" + listName + "_" + index + "__" + name + "' name='" + listName + "[" + index + "]." + name + "' type='text' value='' class='form-control' />";
+    }
+
+    function createInputCellHidden(listName, name, index) {
+        return "<input id='" + listName + "_" + index + "__" + name + "' name='" + listName + "[" + index + "]." + name + "' type='hidden' value='' class='form-control' />";
+    }
+
+    function createSpanCell(listName, name, index) {
+        return "<span class='text-danger field-validation-valid' data-valmsg-for='" + listName + "[" + index + "]." + name + "' data-valmsg-replace='true'></span>";
+    }
+
+    function createCell(listName, name, index) {
+        return "<td>" + createInputCell(listName, name, index) + createSpanCell(listName, name, index) + "</td>";
+    }
+
+    function createIdCell(listName, index) {
+        return "<td>" + createInputCellHidden(listName, "Id", index) + "</td>";
+    }
+
+    function createRemoveCell(type, index) {
+        return "<td><input type='button' value='Remove' onclick='remove" + type + "(" +index + ")'/></td>";
+    }
+
+    function removeEmail(index) {
+
+        let listName = '@nameof(ContactViewModel.Emails)';
+        let rowName = "trEmail";
+
+        removeRow(rowName, index);
+
+        //if not last in the list
+        //change ids for correct order
+        if (index != indexOfEmails - 1) {
+            for (index = index + 1; index < indexOfEmails; index++) {
+                //change tr id
+                changeInputCell(listName, '@nameof(EmailViewModel.Id)', index);
+                changeInputCell(listName, '@nameof(EmailViewModel.EmailType)', index);
+                changeSpanCell(listName, '@nameof(EmailViewModel.EmailType)', index);
+                changeInputCell(listName, '@nameof(EmailViewModel.Value)', index);
+                changeSpanCell(listName, '@nameof(EmailViewModel.Value)', index);
+                changeRemoveCell("Email", index);
+                let controlToBeRenamed = "#" + rowName + index;
+                $(controlToBeRenamed).attr('id', rowName + (index - 1));
+            }
+        }
+
+        indexOfEmails--;
+    }
+
+    function removePhone(index) {
+
+        let listName = '@nameof(ContactViewModel.Phones)';
+        let rowName = "trPhone";
+
+        removeRow(rowName, index);
+
+        //if not last in the list
+        //change ids for correct order
+        if (index != indexOfPhones - 1) {
+            for (index = index + 1; index < indexOfPhones; index++) {
+                //change tr id
+                changeInputCell(listName, '@nameof(PhoneViewModel.Id)', index);
+                changeInputCell(listName, '@nameof(PhoneViewModel.PhoneType)', index);
+                changeSpanCell(listName, '@nameof(PhoneViewModel.PhoneType)', index);
+                changeInputCell(listName, '@nameof(PhoneViewModel.PhoneNumber)', index);
+                changeSpanCell(listName, '@nameof(PhoneViewModel.PhoneNumber)', index);
+                changeRemoveCell("Phone", index);
+                let controlToBeRenamed = "#" + rowName + index;
+                $(controlToBeRenamed).attr('id', rowName + (index - 1));
+            }
+        }
+
+        indexOfPhones--;
+    }
+
+    function removeSkype(index) {
+
+        let listName = '@nameof(ContactViewModel.Skypes)';
+        let rowName = "trSkype";
+
+        removeRow(rowName, index);
+
+        //if not last in the list
+        //change ids for correct order
+        if (index != indexOfSkypes - 1) {
+            for (index = index + 1; index < indexOfSkypes; index++) {
+                //change tr id
+                changeInputCell(listName, '@nameof(SkypeViewModel.Id)', index);
+                changeInputCell(listName, '@nameof(SkypeViewModel.SkypeType)', index);
+                changeSpanCell(listName, '@nameof(SkypeViewModel.SkypeType)', index);
+                changeInputCell(listName, '@nameof(SkypeViewModel.Value)', index);
+                changeSpanCell(listName, '@nameof(SkypeViewModel.Value)', index);
+                changeRemoveCell("Skype", index);
+                let controlToBeRenamed = "#" + rowName + index;
+                $(controlToBeRenamed).attr('id', rowName + (index - 1));
+            }
+        }
+
+        indexOfSkypes--;
+    }
+
+    function removeOther(index) {
+
+        let listName = '@nameof(ContactViewModel.Others)';
+        let rowName = "trOther";
+
+        removeRow(rowName, index);
+
+        //if not last in the list
+        //change ids for correct order
+        if (index != indexOfOthers - 1) {
+            for (index = index + 1; index < indexOfOthers; index++) {
+                //change tr id
+                changeInputCell(listName, '@nameof(OtherContactInfoViewModel.Id)', index);
+                changeInputCell(listName, '@nameof(OtherContactInfoViewModel.Value)', index);
+                changeSpanCell(listName, '@nameof(OtherContactInfoViewModel.Value)', index);
+                changeRemoveCell("Other", index);
+                let controlToBeRenamed = "#" + rowName + index;
+                $(controlToBeRenamed).attr('id', rowName + (index - 1));
+            }
+        }
+
+        indexOfOthers--;
+    }
+
+    function changeInputCell(listName, name, index) {
+        let oldId = "#" + listName + "_" + index + "__" + name;
+        let newIndex = index - 1;
+        //first change attributes
+        $(oldId).attr('name', listName + "[" + newIndex + "]." + name);
+        //then id
+        $(oldId).attr('id', listName + "_" + newIndex + "__" + name);
+    }
+
+    function changeSpanCell(listName, name, index) {
+        let oldAttr = listName + "[" + index + "]." + name;
+        let newAttr = listName + "[" + (index - 1) + "]." + name;
+        $("span[data-valmsg-for='" + oldAttr + "']").attr("data-valmsg-for", newAttr);
+    }
+
+    function changeRemoveCell(type, index) {
+        let oldAttr = "remove" + type + "(" + index + ")";
+        let newAttr = "remove" + type + "(" + (index - 1) + ")";
+        alert($("input[onclick='" + oldAttr + "']").attr("onclick"));
+        $("input[onclick='" + oldAttr + "']").attr("onclick", newAttr);
+    }
+
+    function removeRow(rowName, index) {
+        let controlToBeRemoved = "#" + rowName + index;
+        $(controlToBeRemoved).remove();
+    }
+</script>
