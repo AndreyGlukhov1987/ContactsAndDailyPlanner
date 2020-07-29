@@ -108,7 +108,8 @@
                                     @Html.HiddenFor(model => Model.Phones[i].Id)
                                 </td>
                                 <td>
-                                    <input asp-for="@Model.Phones[i].PhoneType" class="form-control" />
+                                    <select asp-for="@Model.Phones[i].PhoneType" asp-items="@(new SelectList(ContactTypes.PhoneTypes))" class="form-control">
+                                    </select>
                                     <span asp-validation-for="@Model.Phones[i].PhoneType" class="text-danger"></span>
                                 </td>
                                 <td>
@@ -136,7 +137,8 @@
                                     @Html.HiddenFor(model => Model.Skypes[i].Id)
                                 </td>
                                 <td>
-                                    <input asp-for="@Model.Skypes[i].SkypeType" class="form-control" />
+                                    <select asp-for="@Model.Skypes[i].SkypeType" asp-items="@(new SelectList(ContactTypes.SkypeTypes))" class="form-control">
+                                    </select>
                                     <span asp-validation-for="@Model.Skypes[i].SkypeType" class="text-danger"></span>
                                 </td>
                                 <td>
@@ -200,7 +202,7 @@
 
         let idCell = createIdCell(listName, index);
 
-        let emailTypeCell = createCell(listName, '@nameof(EmailViewModel.EmailType)', index);
+        let emailTypeCell = createSelectCell(listName, '@nameof(EmailViewModel.EmailType)', index, @Html.Raw(Json.Serialize(ContactTypes.EmailTypes.Select(v => v.ToString()))));
         let emailCell = createCell(listName, '@nameof(EmailViewModel.Value)', index);
         let removeCell = createRemoveCell("Email", index);
 
@@ -217,7 +219,7 @@
 
         let idCell = createIdCell(listName, index);
 
-        let phoneTypeCell = createCell(listName, '@nameof(PhoneViewModel.PhoneType)', index);
+        let phoneTypeCell = createSelectCell(listName, '@nameof(PhoneViewModel.PhoneType)', index, @Html.Raw(Json.Serialize(ContactTypes.PhoneTypes.Select(v => v.ToString()))));
         let phoneCell = createCell(listName, '@nameof(PhoneViewModel.PhoneNumber)', index);
         let removeCell = createRemoveCell("Phone", index);
 
@@ -234,7 +236,7 @@
 
         let idCell = createIdCell(listName, index);
 
-        let skypeTypeCell = createCell(listName, '@nameof(SkypeViewModel.SkypeType)', index);
+        let skypeTypeCell = createSelectCell(listName, '@nameof(SkypeViewModel.SkypeType)', index, @Html.Raw(Json.Serialize(ContactTypes.SkypeTypes.Select(v => v.ToString()))));
         let skypeCell = createCell(listName, '@nameof(SkypeViewModel.Value)', index);
         let removeCell = createRemoveCell("Skype", index);
 
@@ -273,6 +275,19 @@
 
     function createCell(listName, name, index) {
         return "<td>" + createInputCell(listName, name, index) + createSpanCell(listName, name, index) + "</td>";
+    }
+
+    function createSelectCell(listName, name, index, options) {
+        return "<td>" + createSelect(listName, name, index, options) + createSpanCell(listName, name, index) + "</td>";
+    }
+
+    function createSelect(listName, name, index, options) {
+        let result = "<select id='" + listName + "_" + index + "__" + name + "' name='" + listName + "[" + index + "]." + name + "' type='text' value='' class='form-control'>";
+        for (const option of options) {
+            result = result + "<option>" + option + "</option>";
+        }
+        result = result + "</select>";
+        return result;
     }
 
     function createIdCell(listName, index) {
@@ -403,7 +418,6 @@
     function changeRemoveCell(type, index) {
         let oldAttr = "remove" + type + "(" + index + ")";
         let newAttr = "remove" + type + "(" + (index - 1) + ")";
-        alert($("input[onclick='" + oldAttr + "']").attr("onclick"));
         $("input[onclick='" + oldAttr + "']").attr("onclick", newAttr);
     }
 
